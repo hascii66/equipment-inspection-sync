@@ -8,7 +8,7 @@ This is an offline-first mobile app for recording equipment inspections, built w
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 Here is how to get the project up and running:
 
@@ -53,7 +53,7 @@ npx cordova emulate android
 
 ---
 
-## ✨ Features Implemented
+## Features Implemented
 
 * **Offline SQLite Database**: Runs on a native SQLite database with a seamless **LocalStorage fallback** for web browser reviews.
 * **Camera & Barcode Scanner**: Fully integrated native Cordova camera and barcode scanner (with clean simulated web fallbacks so you can test them in your browser).
@@ -66,7 +66,7 @@ npx cordova emulate android
 
 ---
 
-## 🛠️ Architectural & Sync Decisions
+## Architectural & Sync Decisions
 
 ### 1. Offline-First Architecture
 * All data writes and updates during inspection (Passed/Failed result selection, Technical Notes input, Photo Attachments) are immediately saved to the local SQLite database (`inspections_db_v2.db`).
