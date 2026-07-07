@@ -1,20 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InspectionDetailViewModel } from './inspection-detail.viewmodel';
-import { ToastController } from '@ionic/angular';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-inspection-detail',
   templateUrl: './inspection-detail.page.html',
   styleUrls: ['./inspection-detail.page.scss'],
   providers: [InspectionDetailViewModel],
-  standalone: false
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    TranslatePipe,
+    RouterModule
+  ]
 })
 export class InspectionDetailPage implements OnInit {
   inspection$ = this.vm.inspection$;
   isOnline$ = this.vm.isOnline$;
   selectedResult: 'Passed' | 'Failed' | null = null;
+  technicalNotes: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -28,8 +38,11 @@ export class InspectionDetailPage implements OnInit {
     if (id) {
       this.vm.loadInspection(id);
       this.inspection$.subscribe(item => {
-        if (item && item.resultStatus !== 'Pending') {
-          this.selectedResult = item.resultStatus as 'Passed' | 'Failed';
+        if (item) {
+          if (item.resultStatus !== 'Pending') {
+            this.selectedResult = item.resultStatus as 'Passed' | 'Failed';
+          }
+          this.technicalNotes = item.technicalNotes || '';
         }
       });
     }
@@ -41,7 +54,7 @@ export class InspectionDetailPage implements OnInit {
 
   async save() {
     if (!this.selectedResult) return;
-    await this.vm.saveStatus(this.selectedResult);
+    await this.vm.saveStatus(this.selectedResult, this.technicalNotes);
 
     const toast = await this.toastCtrl.create({
       message: 'Saved successfully to offline SQLite database!',

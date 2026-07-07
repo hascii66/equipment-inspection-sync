@@ -1,13 +1,25 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InspectionListViewModel } from './inspection-list.viewmodel';
 import { ToastController } from '@ionic/angular';
+import { InspectionCardComponent } from '../../components/inspection-card/inspection-card.component';
 
 @Component({
   selector: 'app-inspection-list',
   templateUrl: './inspection-list.page.html',
   styleUrls: ['./inspection-list.page.scss'],
   providers: [InspectionListViewModel],
-  standalone: false
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonicModule,
+    TranslatePipe,
+    RouterModule,
+    InspectionCardComponent
+  ]
 })
 export class InspectionListPage implements OnInit {
   inspections$ = this.vm.inspections$;
@@ -25,6 +37,11 @@ export class InspectionListPage implements OnInit {
 
   ionViewWillEnter() {
     this.vm.loadInspections();
+  }
+
+  onSearch(event: any) {
+    const val = event.target.value;
+    this.vm.setSearchQuery(val || '');
   }
 
   async sync() {

@@ -9,11 +9,11 @@ const routes: Routes = [
   },
   {
     path: 'inspections',
-    loadChildren: () => import('./pages/inspection-list/inspection-list.module').then(m => m.InspectionListPageModule)
+    loadComponent: () => import('./pages/inspection-list/inspection-list.page').then(m => m.InspectionListPage)
   },
   {
     path: 'inspections/:id',
-    loadChildren: () => import('./pages/inspection-detail/inspection-detail.module').then(m => m.InspectionDetailPageModule)
+    loadComponent: () => import('./pages/inspection-detail/inspection-detail.page').then(m => m.InspectionDetailPage)
   }
 ];
 @NgModule({

@@ -27,13 +27,14 @@ export class InspectionDetailViewModel {
     });
   }
 
-  async saveStatus(result: 'Passed' | 'Failed') {
+  async saveStatus(result: 'Passed' | 'Failed', notes?: string) {
     const current = this.inspectionSubject.value;
     if (!current) return;
 
     const updated: Inspection = {
       ...current,
       resultStatus: result,
+      technicalNotes: notes ?? current.technicalNotes,
       syncStatus: 'Pending' // mark as pending to be picked up by sync
     };
 

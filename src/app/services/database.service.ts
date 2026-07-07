@@ -13,8 +13,8 @@ export class DatabaseService {
   private isDbReady = new BehaviorSubject<boolean>(false);
   private isWeb = false;
 
-  // Web fallback storage
-  private webStorageKey = 'equipment_inspections_fallback';
+  // Web fallback storage (versioned to force update)
+  private webStorageKey = 'equipment_inspections_fallback_v3';
 
   constructor() {
     this.isWeb = !Capacitor.isNativePlatform();
@@ -36,7 +36,7 @@ export class DatabaseService {
 
       this.sqliteConnection = new SQLiteConnection(CapacitorSQLite);
       this.db = await this.sqliteConnection.createConnection(
-        'inspections_db',
+        'inspections_db_v2',
         false,
         'no-encryption',
         1,
@@ -48,11 +48,17 @@ export class DatabaseService {
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS inspections (
           id TEXT PRIMARY KEY,
+          equipmentId TEXT NOT NULL,
+          sysId TEXT NOT NULL,
           equipmentName TEXT NOT NULL,
           dueDate TEXT NOT NULL,
           resultStatus TEXT NOT NULL,
           syncStatus TEXT NOT NULL,
-          updatedAt TEXT NOT NULL
+          updatedAt TEXT NOT NULL,
+          technicalNotes TEXT,
+          opHours INTEGER,
+          coreTemp REAL,
+          voltStability REAL
         );
       `;
       await this.db.execute(createTableQuery);
@@ -86,43 +92,73 @@ export class DatabaseService {
     return [
       {
         id: '1',
+        equipmentId: 'UNIT-8839',
+        sysId: 'HVAC-8839-A',
         equipmentName: 'HVAC Compressor 01',
         dueDate: '2026-07-10',
         resultStatus: 'Pending',
         syncStatus: 'Pending',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        technicalNotes: '',
+        opHours: 8520,
+        coreTemp: 38.2,
+        voltStability: 99.4
       },
       {
         id: '2',
+        equipmentId: 'GEN-B2',
+        sysId: 'GEN-1029-B',
         equipmentName: 'Main Generator B',
         dueDate: '2026-07-12',
         resultStatus: 'Passed',
         syncStatus: 'Synced',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        technicalNotes: 'Nominal operation parameters confirmed.',
+        opHours: 14200,
+        coreTemp: 72.5,
+        voltStability: 98.1
       },
       {
         id: '3',
+        equipmentId: 'PUMP-A',
+        sysId: 'PUMP-0021-X',
         equipmentName: 'Water Pump Alpha',
         dueDate: '2026-07-08',
         resultStatus: 'Failed',
         syncStatus: 'Failed',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        technicalNotes: 'Valves leaking, pressure loss detected.',
+        opHours: 3100,
+        coreTemp: 24.1,
+        voltStability: 99.7
       },
       {
         id: '4',
+        equipmentId: 'FAP-04',
+        sysId: 'FAP-9921-C',
         equipmentName: 'Fire Alarm Panel 4',
         dueDate: '2026-07-15',
         resultStatus: 'Pending',
-        syncStatus: 'Pending',
-        updatedAt: new Date().toISOString()
+        syncStatus: 'Synced',
+        updatedAt: new Date().toISOString(),
+        technicalNotes: '',
+        opHours: 24300,
+        coreTemp: 28.6,
+        voltStability: 99.9
       },
       {
         id: '5',
+        equipmentId: 'ELEV-CC',
+        sysId: 'EC-4022-B',
         equipmentName: 'Elevator Control Cabin',
         dueDate: '2026-07-20',
         resultStatus: 'Pending',
-        syncStatus: 'Pending',
-        updatedAt: new Date().toISOString()
+        syncStatus: 'Synced',
+        updatedAt: new Date().toISOString(),
+        technicalNotes: '',
+        opHours: 12482,
+        coreTemp: 42.5,
+        voltStability: 99.8
       }
     ];
   }
@@ -131,16 +167,22 @@ export class DatabaseService {
     const seed = this.getSeedRecords();
     for (const record of seed) {
       const query = `
-        INSERT INTO inspections (id, equipmentName, dueDate, resultStatus, syncStatus, updatedAt)
-        VALUES (?, ?, ?, ?, ?, ?);
+        INSERT INTO inspections (id, equipmentId, sysId, equipmentName, dueDate, resultStatus, syncStatus, updatedAt, technicalNotes, opHours, coreTemp, voltStability)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
       await this.db.run(query, [
         record.id,
+        record.equipmentId,
+        record.sysId,
         record.equipmentName,
         record.dueDate,
         record.resultStatus,
         record.syncStatus,
-        record.updatedAt
+        record.updatedAt,
+        record.technicalNotes || '',
+        record.opHours || 0,
+        record.coreTemp || 0.0,
+        record.voltStability || 0.0
       ]);
     }
   }
@@ -179,13 +221,17 @@ export class DatabaseService {
 
     const query = `
       UPDATE inspections
-      SET resultStatus = ?, syncStatus = ?, updatedAt = ?
+      SET resultStatus = ?, syncStatus = ?, updatedAt = ?, technicalNotes = ?, opHours = ?, coreTemp = ?, voltStability = ?
       WHERE id = ?;
     `;
     await this.db.run(query, [
       inspection.resultStatus,
       inspection.syncStatus,
       inspection.updatedAt,
+      inspection.technicalNotes || '',
+      inspection.opHours || 0,
+      inspection.coreTemp || 0,
+      inspection.voltStability || 0,
       inspection.id
     ]);
   }

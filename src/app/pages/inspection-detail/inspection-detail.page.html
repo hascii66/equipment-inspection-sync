@@ -1,93 +1,166 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header class="ion-no-border tech-header">
+  <ion-toolbar class="tech-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inspections"></ion-back-button>
+      <ion-back-button defaultHref="/inspections" class="back-btn"></ion-back-button>
     </ion-buttons>
-    <ion-title>Inspection Detail</ion-title>
+    
+    <ion-title class="tech-title">{{ 'INSPECTION_DETAIL' | translate }}</ion-title>
+    
     <ion-buttons slot="end">
-      <ion-badge [color]="(isOnline$ | async) ? 'success' : 'danger'" class="network-badge">
-        {{ (isOnline$ | async) ? 'Online' : 'Offline' }}
-      </ion-badge>
+      <!-- Network indicator badge -->
+      <div class="network-pill">
+        <span class="status-dot" [class.online]="isOnline$ | async"></span>
+        <span class="status-text">
+          {{ ((isOnline$ | async) ? 'ONLINE' : 'OFFLINE') | translate }}
+        </span>
+      </div>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="detail-container" *ngIf="inspection$ | async as item; else loading">
-    <div class="card-glass">
-      <div class="header-section">
-        <span class="label-tiny">EQUIPMENT NAME</span>
-        <h1 class="eq-title">{{ item.equipmentName }}</h1>
+<ion-content class="tech-content">
+  <div class="detail-container-custom" *ngIf="inspection$ | async as item; else loading">
+    
+    <!-- Hero banner card -->
+    <div class="hero-schematic-card">
+      <div class="hero-text-overlay">
+        <p class="sys-id-text">SYS_ID: {{ item.sysId }}</p>
+        <h1 class="hero-eq-title">{{ item.equipmentName }}</h1>
+      </div>
+      <button class="btn-scan">
+        <ion-icon name="qr-code-outline" class="scan-icon"></ion-icon>
+        {{ 'SCAN' | translate }}
+      </button>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div class="info-grid-container">
+      <div class="grid-cell full-width">
+        <span class="cell-label">{{ 'EQUIPMENT_NAME' | translate }}</span>
+        <p class="cell-value">{{ item.equipmentName }}</p>
       </div>
 
-      <div class="info-row">
-        <div>
-          <span class="label-tiny">DUE DATE</span>
-          <p class="info-val">{{ item.dueDate }}</p>
-        </div>
-        <div>
-          <span class="label-tiny">SYNC STATUS</span>
-          <ion-badge [color]="getSyncColor(item.syncStatus)" class="badge-custom">
-            {{ item.syncStatus }}
-          </ion-badge>
+      <div class="grid-cell">
+        <span class="cell-label">{{ 'DUE_DATE' | translate }}</span>
+        <p class="cell-value">{{ item.dueDate }}</p>
+      </div>
+
+      <div class="grid-cell">
+        <span class="cell-label">{{ 'SYNC_STATUS' | translate }}</span>
+        <div class="sync-status-indicator">
+          <ion-icon name="cloud-done-outline" class="cloud-icon" *ngIf="item.syncStatus === 'Synced'"></ion-icon>
+          <ion-icon name="cloud-offline-outline" class="cloud-icon-pending" *ngIf="item.syncStatus !== 'Synced'"></ion-icon>
+          <span class="sync-label-text" [class.synced]="item.syncStatus === 'Synced'">
+            {{ (item.syncStatus === 'Synced' ? 'LOCAL_SYNCED' : 'PENDING_SYNC') | translate }}
+          </span>
         </div>
       </div>
 
-      <div class="info-row">
-        <div>
-          <span class="label-tiny">CURRENT RESULT</span>
-          <ion-badge [color]="getResultColor(item.resultStatus)" class="badge-custom">
-            {{ item.resultStatus }}
-          </ion-badge>
-        </div>
-        <div>
-          <span class="label-tiny">LAST UPDATED</span>
-          <p class="info-val-time">{{ item.updatedAt | date:'short' }}</p>
-        </div>
+      <div class="grid-cell">
+        <span class="cell-label">{{ 'CURRENT_RESULT' | translate }}</span>
+        <span class="result-badge-detail" [class]="item.resultStatus.toLowerCase()">
+          {{ (item.resultStatus | uppercase) | translate }}
+        </span>
+      </div>
+
+      <div class="grid-cell">
+        <span class="cell-label">{{ 'LAST_MODIFIED' | translate }}</span>
+        <p class="cell-value-small">{{ item.updatedAt | date:'MM.dd.yy // HH:mm' }}</p>
       </div>
     </div>
 
-    <!-- Action Section -->
-    <div class="action-card">
-      <h3 class="action-title">Record Inspection Result</h3>
-      <p class="action-desc">Select result. Changes will write immediately to local SQLite database and sync automatically once online.</p>
-
-      <div class="decision-buttons">
-        <ion-button 
-          expand="block" 
-          color="success" 
-          [fill]="selectedResult === 'Passed' ? 'solid' : 'outline'" 
-          (click)="selectResult('Passed')"
-          class="btn-select">
-          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-          Passed
-        </ion-button>
-        <ion-button 
-          expand="block" 
-          color="danger" 
-          [fill]="selectedResult === 'Failed' ? 'solid' : 'outline'" 
-          (click)="selectResult('Failed')"
-          class="btn-select">
-          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-          Failed
-        </ion-button>
-      </div>
-
-      <ion-button 
-        expand="block" 
-        color="primary" 
-        [disabled]="!selectedResult" 
-        (click)="save()"
-        class="btn-save">
-        Save Offline (SQLite)
-      </ion-button>
+    <!-- Record Result Section -->
+    <div class="record-section-title">
+      <span class="square-bullet">■</span> {{ 'RECORD_RESULT' | translate }}
     </div>
+
+    <!-- Image Attachment -->
+    <button class="btn-attach-image">
+      <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
+      {{ 'ATTACH_IMAGE' | translate }}
+    </button>
+
+    <!-- Pass / Fail toggles -->
+    <div class="result-toggle-buttons">
+      <button 
+        class="toggle-btn pass" 
+        [class.active]="selectedResult === 'Passed'"
+        (click)="selectResult('Passed')">
+        <ion-icon name="checkmark-circle-outline" class="toggle-icon"></ion-icon>
+        {{ 'PASS' | translate }}
+      </button>
+      
+      <button 
+        class="toggle-btn fail" 
+        [class.active]="selectedResult === 'Failed'"
+        (click)="selectResult('Failed')">
+        <ion-icon name="alert-circle-outline" class="toggle-icon"></ion-icon>
+        {{ 'FAIL' | translate }}
+      </button>
+    </div>
+
+    <!-- Technical Notes -->
+    <div class="tech-notes-container">
+      <span class="cell-label">{{ 'TECHNICAL_NOTES' | translate }}</span>
+      <textarea 
+        [(ngModel)]="technicalNotes" 
+        [placeholder]="'ENTER_FINDINGS' | translate" 
+        class="notes-textarea"></textarea>
+    </div>
+
+    <!-- Additional widgets -->
+    <!-- Op Hours -->
+    <div class="widget-card">
+      <div class="widget-header">
+        <ion-icon name="time-outline" class="widget-icon"></ion-icon>
+        <span class="widget-label">{{ 'OP_HOURS' | translate }}</span>
+      </div>
+      <h2 class="widget-value">{{ item.opHours | number }} <span class="widget-unit">HRS</span></h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: 62%;"></div>
+      </div>
+    </div>
+
+    <!-- Core Temp -->
+    <div class="widget-card border-orange">
+      <div class="widget-header">
+        <ion-icon name="thermometer-outline" class="widget-icon orange-icon"></ion-icon>
+        <span class="widget-label">{{ 'CORE_TEMP' | translate }}</span>
+      </div>
+      <h2 class="widget-value">{{ item.coreTemp }} <span class="widget-unit">°C</span></h2>
+      <div class="segmented-bar">
+        <div class="bar-segment green active"></div>
+        <div class="bar-segment green active"></div>
+        <div class="bar-segment orange active"></div>
+        <div class="bar-segment gray"></div>
+      </div>
+    </div>
+
+    <!-- Volt Stability -->
+    <div class="widget-card border-green">
+      <div class="widget-header">
+        <ion-icon name="flash-outline" class="widget-icon green-icon"></ion-icon>
+        <span class="widget-label">{{ 'VOLT_STABILITY' | translate }}</span>
+      </div>
+      <h2 class="widget-value">{{ item.voltStability }} <span class="widget-unit">%</span></h2>
+      <span class="nominal-text">{{ 'NOMINAL_RANGE' | translate }}</span>
+    </div>
+
+    <!-- Commit Button -->
+    <button 
+      class="btn-commit-database" 
+      [disabled]="!selectedResult"
+      (click)="save()">
+      <ion-icon name="save-outline" class="commit-icon"></ion-icon>
+      {{ 'COMMIT_DATABASE' | translate }}
+    </button>
+
   </div>
 
   <ng-template #loading>
     <div class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading inspection record...</p>
+      <ion-spinner name="crescent" color="light"></ion-spinner>
+      <p>{{ 'LOADING_RECORD' | translate }}</p>
     </div>
   </ng-template>
 </ion-content>

@@ -1,72 +1,166 @@
-.network-badge {
-  margin-right: 12px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: 6px 12px;
-  border-radius: 12px;
+// Dark theme variables
+:host {
+  --app-bg: #121212;
+  --card-bg: #1a1a1a;
+  --border-color: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #8a8a8f;
+  --blue-primary: #3880ff;
+  --green-bg: rgba(46, 125, 50, 0.15);
+  --green-text: #4caf50;
+  --red-bg: rgba(198, 40, 40, 0.15);
+  --red-text: #f44336;
+  --gray-bg: rgba(255, 255, 255, 0.08);
+  --gray-text: #aeaeae;
 }
 
-.content-container {
-  padding: 16px;
-  max-width: 600px;
-  margin: 0 auto;
+.tech-content {
+  --background: var(--app-bg);
+  background: var(--app-bg);
 }
 
-.inspection-item-card {
-  --background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-  }
-
-  ion-item {
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 16px;
-    --padding-bottom: 16px;
-    --border-style: none;
-    --inner-border-width: 0;
-  }
+.tech-header {
+  border-bottom: 1px solid var(--border-color);
 }
 
-.equipment-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--ion-color-step-900, #222);
-  margin: 0 0 6px 0;
+.tech-toolbar {
+  --background: #181818;
+  --color: var(--text-primary);
+  --border-style: none;
+  padding: 4px 8px;
 }
 
-.due-date {
-  font-size: 0.85rem;
-  color: var(--ion-color-step-600, #666);
-  margin: 0 0 12px 0;
-}
-
-.status-badges {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-
-  .status-badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-}
-
-.arrow-icon {
-  color: var(--ion-color-step-400, #999);
+.back-btn {
+  --color: var(--text-primary);
   font-size: 1.25rem;
+}
+
+.tech-title {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+}
+
+.network-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #242424;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 12px;
+  border: 1px solid var(--border-color);
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #555;
+    
+    &.online {
+      background: #4caf50;
+      box-shadow: 0 0 8px #4caf50;
+    }
+  }
+
+  .status-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+  }
+}
+
+.sync-action-btn {
+  --background: var(--blue-primary);
+  --border-radius: 6px;
+  --color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin: 0;
+  height: 36px;
+  
+  .btn-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+// Search bar
+.search-box-wrapper {
+  padding: 16px;
+  background: var(--app-bg);
+}
+
+.search-box-container {
+  display: flex;
+  align-items: center;
+  background: #181818;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0 12px;
+  height: 48px;
+
+  .search-icon-left {
+    color: #55555d;
+    font-size: 1.2rem;
+    margin-right: 8px;
+  }
+
+  .filter-icon-right {
+    color: #8e8e93;
+    font-size: 1.2rem;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+
+    &::placeholder {
+      color: #55555d;
+    }
+  }
+}
+
+// List content
+.inspections-list-wrapper {
+  padding: 0; // Stretched edge-to-edge
+}
+
+// Engine Footer
+.engine-footer {
+  padding: 40px 16px;
+  background: var(--app-bg);
+
+  .engine-text-row {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #55555d;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.5px;
+    
+    &.text-dimmed {
+      color: #3a3a3d;
+    }
+  }
+}
+
+// FAB Button
+.fab-custom {
+  margin-bottom: 16px;
+  margin-right: 8px;
+
+  ion-fab-button {
+    --background: var(--blue-primary);
+    --color: #ffffff;
+  }
 }

@@ -1,0 +1,132 @@
+:host {
+  display: block;
+  width: 100%;
+  --border-color: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #8a8a8f;
+  --green-bg: rgba(46, 125, 50, 0.15);
+  --green-text: #4caf50;
+  --red-bg: rgba(198, 40, 40, 0.15);
+  --red-text: #f44336;
+  --gray-bg: rgba(255, 255, 255, 0.08);
+  --gray-text: #aeaeae;
+}
+
+.tech-inspection-card {
+  background: #181818;
+  border-bottom: 1px solid var(--border-color);
+  padding: 20px 16px; // Horizontal padding inside the card component
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+
+  &:active {
+    background-color: #202020;
+  }
+
+  .card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .card-info-header {
+    flex: 1;
+  }
+
+  .eq-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+  }
+
+  .eq-sub-details {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .chevron-arrow-right {
+    color: #55555d;
+    font-size: 1.2rem;
+  }
+
+  .card-status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  // Result Badges
+  .result-badge-custom {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+
+    &.pending {
+      background: var(--gray-bg);
+      color: var(--gray-text);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    &.passed {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border-color: rgba(76, 175, 80, 0.1);
+    }
+
+    &.failed {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border-color: rgba(244, 67, 54, 0.1);
+    }
+  }
+
+  // Sync statuses
+  .sync-status-display {
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .sync-waiting {
+    font-style: italic;
+    color: #55555d;
+  }
+
+  .sync-completed {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+
+    .check-icon {
+      font-size: 0.95rem;
+    }
+  }
+
+  .sync-failed {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #d32f2f;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+
+    .alert-icon {
+      font-size: 0.9rem;
+    }
+  }
+}

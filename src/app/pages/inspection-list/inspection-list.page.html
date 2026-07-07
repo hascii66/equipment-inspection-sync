@@ -1,51 +1,70 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Equipment Inspector</ion-title>
+<ion-header class="ion-no-border tech-header">
+  <ion-toolbar class="tech-toolbar">
+    <ion-buttons slot="start">
+      <ion-button class="back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    <ion-title class="tech-title">{{ 'TITLE' | translate }}</ion-title>
+    
     <ion-buttons slot="end">
-      <!-- Network Indicator Badge -->
-      <ion-badge [color]="(isOnline$ | async) ? 'success' : 'danger'" class="network-badge">
-        {{ (isOnline$ | async) ? 'Online' : 'Offline' }}
-      </ion-badge>
-      <!-- Sync Action Button -->
-      <ion-button (click)="sync()" [disabled]="(isSyncing$ | async) || !(isOnline$ | async)">
-        <ion-spinner name="crescent" *ngIf="isSyncing$ | async"></ion-spinner>
-        <span *ngIf="!(isSyncing$ | async)">Sync</span>
+      <!-- Network indicator badge -->
+      <div class="network-pill">
+        <span class="status-dot" [class.online]="isOnline$ | async"></span>
+        <span class="status-text">
+          {{ ((isOnline$ | async) ? 'ONLINE' : 'OFFLINE') | translate }}
+        </span>
+      </div>
+      
+      <!-- Sync button -->
+      <ion-button 
+        class="sync-action-btn"
+        (click)="sync()" 
+        [disabled]="(isSyncing$ | async) || !(isOnline$ | async)">
+        <ion-spinner name="crescent" *ngIf="isSyncing$ | async" color="light"></ion-spinner>
+        <span *ngIf="!(isSyncing$ | async)" class="btn-inner">
+          <ion-icon name="refresh-outline" class="sync-icon"></ion-icon>
+          {{ 'SYNC' | translate }}
+        </span>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Equipment Inspector</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div class="content-container">
-    <ion-list lines="none">
-      <ion-item-sliding *ngFor="let item of (inspections$ | async)" class="inspection-item-card">
-        <ion-item [routerLink]="['/inspections', item.id]" button detail="false">
-          <ion-label>
-            <h2 class="equipment-name">{{ item.equipmentName }}</h2>
-            <p class="due-date">Due Date: {{ item.dueDate }}</p>
-            
-            <div class="status-badges">
-              <!-- Result Status -->
-              <ion-badge [color]="getResultColor(item.resultStatus)" class="status-badge">
-                Result: {{ item.resultStatus }}
-              </ion-badge>
-              
-              <!-- Sync Status -->
-              <ion-badge [color]="getSyncColor(item.syncStatus)" class="status-badge">
-                Sync: {{ item.syncStatus }}
-              </ion-badge>
-            </div>
-          </ion-label>
-          
-          <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
-        </ion-item>
-      </ion-item-sliding>
-    </ion-list>
+<ion-content class="tech-content">
+  <!-- Search container -->
+  <div class="search-box-wrapper">
+    <div class="search-box-container">
+      <ion-icon name="search-outline" class="search-icon-left"></ion-icon>
+      <input 
+        type="text" 
+        (input)="onSearch($event)" 
+        [placeholder]="'SEARCH_PLACEHOLDER' | translate" 
+        class="search-input" />
+      <ion-icon name="funnel-outline" class="filter-icon-right"></ion-icon>
+    </div>
   </div>
+
+  <!-- Inspections List -->
+  <div class="inspections-list-wrapper">
+    <app-inspection-card 
+      *ngFor="let item of (inspections$ | async)" 
+      [item]="item"
+      [routerLink]="['/inspections', item.id]">
+    </app-inspection-card>
+  </div>
+
+  <!-- Footer System Engine info -->
+  <div class="engine-footer">
+    <p class="engine-text-row">{{ 'ENGINE_VERSION' | translate }}</p>
+    <p class="engine-text-row text-dimmed">{{ 'LOGGED_AS' | translate }}</p>
+  </div>
+
+  <!-- Floating Add Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-custom">
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

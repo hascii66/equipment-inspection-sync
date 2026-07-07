@@ -1,0 +1,33 @@
+<div class="tech-inspection-card">
+  <div class="card-top-row">
+    <div class="card-info-header">
+      <h2 class="eq-name">{{ item.equipmentName }}</h2>
+      <p class="eq-sub-details">ID: {{ item.equipmentId }} • DUE {{ item.dueDate }}</p>
+    </div>
+    <ion-icon name="chevron-forward-outline" class="chevron-arrow-right"></ion-icon>
+  </div>
+
+  <div class="card-status-row">
+    <!-- Result Status Badge -->
+    <span class="result-badge-custom" [class]="item.resultStatus.toLowerCase()">
+      {{ 'RESULT' | translate }}: {{ (item.resultStatus | uppercase) | translate }}
+    </span>
+
+    <!-- Sync Status Badge -->
+    <div class="sync-status-display">
+      <ng-container [ngSwitch]="item.syncStatus">
+        <span *ngSwitchCase="'Pending'" class="sync-waiting">
+          {{ 'WAITING_SYNC' | translate }}
+        </span>
+        <span *ngSwitchCase="'Synced'" class="sync-completed">
+          <ion-icon name="checkmark-outline" class="check-icon"></ion-icon>
+          {{ 'SYNCED' | translate }}
+        </span>
+        <span *ngSwitchCase="'Failed'" class="sync-failed">
+          <ion-icon name="alert-circle-outline" class="alert-icon"></ion-icon>
+          {{ 'SYNC_FAILED' | translate }}
+        </span>
+      </ng-container>
+    </div>
+  </div>
+</div>
