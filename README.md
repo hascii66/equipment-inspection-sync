@@ -1,62 +1,67 @@
 # Equipment Inspector (Offline-First Mobile App)
 
-This is an offline-first equipment inspection mobile application built using **Ionic Framework**, **Angular**, **Capacitor**, and **SQLite**. It allows field technicians to perform inspections, record results offline, and synchronize data back to a centralized server when internet connectivity becomes available.
+แอปพลิเคชันมือถือสำหรับบันทึกผลการตรวจสอบอุปกรณ์ (Equipment Inspection) แบบ Offline-first พัฒนาด้วย **Ionic Framework**, **Angular 19+**, **Capacitor** และ **SQLite** ออกแบบมาเพื่อให้เจ้าหน้าที่ภาคสนาม (Field Technicians) สามารถบันทึกข้อมูลการตรวจสอบได้ทันทีแม้ในพื้นที่ที่ไม่มีสัญญาณอินเทอร์เน็ต
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ ความต้องการของระบบ (System Requirements)
+- **Node.js**: เวอร์ชั่น `v20.19` หรือ `v22.12` ขึ้นไป (เนื่องจาก Angular 20 CLI ต้องการ Node เวอร์ชั่นดังกล่าว)
+- **nvm** (แนะนำ): เพื่อความสะดวกในการจัดการเวอร์ชั่นของ Node.js
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- npm (v10+ recommended)
-- Ionic CLI (installed globally or run via `npx`):
-  ```bash
-  npm install -g @ionic/cli
-  ```
+---
 
-### Installation
-1. Clone or download the project files.
-2. Navigate to the root directory and install dependencies:
-   ```bash
-   npm install
-   ```
+## 🚀 ขั้นตอนการติดตั้งและรันโปรเจกต์ (Quick Start)
 
-### Running the Mock REST API Server
-The application uses a local JSON database server to simulate API endpoints. Start it in a separate terminal:
+หากคุณเพิ่งทำการโคลน (Clone) โปรเจกต์นี้มา ให้ทำตามขั้นตอนดังนี้:
+
+### 1. สลับ Node.js เวอร์ชั่น (ถ้ามี nvm)
+```bash
+nvm use 22
+```
+
+### 2. ติดตั้ง Dependencies
+ติดตั้งแพ็กเกจทั้งหมดที่จำเป็นของโปรเจกต์:
+```bash
+npm install
+```
+
+### 3. รัน Mock REST API Server (เปิดทิ้งไว้ใน Terminal ที่ 1)
+โปรเจกต์นี้ใช้ `json-server` จำลองเป็นระบบ API ส่วนกลางเพื่อรองรับการซิงค์ข้อมูล:
 ```bash
 npm run mock-server
 ```
-This runs the mock server at [http://localhost:3000/inspections](http://localhost:3000/inspections).
+*API Server จะทำงานอยู่ที่ [http://localhost:3000/inspections](http://localhost:3000/inspections)*
 
-### Running the App Locally (Web Browser)
-To run the Angular application in your local browser with live-reloading:
+### 4. รันแอปพลิเคชัน (ใน Terminal ที่ 2)
+รัน Angular / Ionic Development Server เพื่อทดสอบบนเว็บเบราว์เซอร์:
 ```bash
 npx ionic serve
 ```
-> **Note on Web Fallback**: Since raw SQLite commands require a native device platform, the app detects browser runtime environments and automatically switches to a robust local storage mock database layer, allowing you to test the offline-first experience seamlessly in standard web browsers!
+*ระบบจะเปิดเบราว์เซอร์ไปที่ [http://localhost:8100](http://localhost:8100) อัตโนมัติ*
 
 ---
 
-## 🏗️ Architectural Decisions & Separations of Concerns
+## 💡 ฟีเจอร์ที่พร้อมใช้งาน
 
-1. **TypeScript Strict Mode**: Entire codebase is written using strictly defined interfaces and typed parameters to avoid standard runtime faults and improve development velocities.
-2. **ViewModel Separation Pattern**: Underneath each view page component, a dedicated `ViewModel` (e.g. `InspectionListViewModel`) manages state logic and coordinates with underlying services. Component classes (`.page.ts`) contain zero business logic and act purely as controllers for binding inputs and displaying toast alerts.
-3. **Database Layer Abstraction**: A standalone service (`DatabaseService`) abstracts data queries and handles platform detection. It uses `@capacitor-community/sqlite` on native and switches to localStorage simulation on web.
-4. **Resilient Sync Engine**: A dedicated `SyncService` listens to network connectivity updates via the `@capacitor/network` plugin. Reconnection immediately triggers background synchronization of pending data.
+1. **Database Initialization & Web Fallback**: 
+   - เมื่อเปิดแอปครั้งแรก ระบบจะทำการสร้างตาราง `inspections` และ Seed ข้อมูลอุปกรณ์เริ่มต้น 5 รายการให้ทันที
+   - หากรันบนบราวเซอร์ (Web runtime) ระบบจะจำลอง SQLite ผ่าน **LocalStorage** ให้อัตโนมัติ เพื่อให้ผู้ตรวจประเมินสามารถรันเทสบนบราวเซอร์ได้ทันทีโดยไม่ต้องตั้งค่า Native Simulator
+2. **Inspection List Screen**:
+   - แสดงรายการอุปกรณ์ทั้งหมด พร้อมสถานะการตรวจสอบ (Passed/Failed) และสถานะการซิงค์ที่มีสีระบุชัดเจน (Synced = เขียว, Pending = เหลือง, Failed = แดง)
+3. **Inspection Detail Screen**:
+   - หน้ารายละเอียดการตรวจสอบ สามารถเลือกเปลี่ยนผลการตรวจสอบเป็น **Passed** หรือ **Failed** และบันทึกลง SQLite/LocalStorage ได้ทันทีในขณะออฟไลน์
+4. **Sync Mechanism & Partial Success**:
+   - ปุ่ม **Sync** จะกดได้เมื่อตัวแอปตรวจพบสถานะ Online
+   - รองรับ **Partial Success**: หากส่งข้อมูลซิงค์ไป 5 ตัว แล้วมีรายการบางตัวซิงค์ล้มเหลว (เช่น Server ขัดข้องเฉพาะเครื่อง) ตัวที่ซิงค์ผ่านจะถูกปรับสถานะเป็น `Synced` ส่วนตัวที่ล้มเหลวจะค้างอยู่ในคิว `Failed` เพื่อรอซิงค์ใหม่ครั้งหน้า
+5. **Auto-Trigger Sync**:
+   - เมื่อปิดโหมดเครื่องบินหรือเชื่อมต่อเน็ตได้ใหม่อีกครั้ง แอปพลิเคชันจะตรวจสอบคิวและกดซิงค์ข้อมูลให้โดยอัตโนมัติ (ผ่าน Capacitor Network Plugin)
 
 ---
 
-## 🔄 Sync Strategy & Partial Failure Design
+## 🏗️ โครงสร้างสถาปัตยกรรม (Architectural Structure)
 
-- **Partial Success Handling**: The sync process runs sequentially or as individual concurrent requests. If certain records succeed and others fail (e.g., server validation failure for a particular equipment ID), succeeded records are immediately updated as `Synced` while failed records remain `Failed`/`Pending` in the SQLite database queue, retrying at the next connectivity event.
-- **Conflict Resolution (Assumptions)**:
-  - **Client-Wins/Last-Write-Wins**: Since field technicians are typically assigned specific devices and equipment tasks, the client's local updates are treated as the source of truth and overwrite server entries.
-  - **Timestamps**: All records are tagged with an `updatedAt` ISO timestamp to audit synchronization timing.
-
----
-
-## 🛠️ What would be done differently with more time
-
-1. **Conflict Resolution Strategy**: Implement a vector-clock or server-side revision checking mechanism to flag conflicts instead of simple client-wins overrides.
-2. **True Web WASM SQLite**: Build standard WebAssembly SQLite drivers (`jeep-sqlite` integration) to mirror exact relational SQL behavior on browsers instead of localStorage mapping.
-3. **Optimistic UI Updates**: Display smooth animations reflecting background synchronization progress instantly on the home dashboard.
+- **TypeScript Strict Mode**: เปิดใช้งาน Strict Mode ในการประกาศ Interface และ Data Models
+- **Separation of Concerns (MVVM Pattern)**:
+  - โค้ดของหน้าจอ (`.page.ts`) ไม่มี Business Logic หรือ State ซับซ้อน มีหน้าที่แสดงผลและเรียก Toast / Alerts เท่านั้น
+  - Business Logic และการบริหาร State ทั้งหมด ถูกแยกไปอยู่ที่ **ViewModel** (`.viewmodel.ts`)
+  - การติดต่อ Database และการทำ Sync ข้อมูล ถูกแยกเป็นระบบ Service (`DatabaseService` และ `SyncService`)
