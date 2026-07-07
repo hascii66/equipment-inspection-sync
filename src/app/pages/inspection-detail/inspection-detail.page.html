@@ -3,11 +3,10 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/inspections" class="back-btn"></ion-back-button>
     </ion-buttons>
-    
+
     <ion-title class="tech-title">{{ 'INSPECTION_DETAIL' | translate }}</ion-title>
-    
+
     <ion-buttons slot="end">
-      <!-- Network indicator badge -->
       <div class="network-pill">
         <span class="status-dot" [class.online]="isOnline$ | async"></span>
         <span class="status-text">
@@ -20,96 +19,99 @@
 
 <ion-content class="tech-content">
   <div class="detail-container-custom" *ngIf="inspection$ | async as item; else loading">
-    
-    <!-- Hero banner card -->
+
     <div class="hero-schematic-card">
       <div class="hero-text-overlay">
         <p class="sys-id-text">SYS_ID: {{ item.sysId }}</p>
         <h1 class="hero-eq-title">{{ item.equipmentName }}</h1>
       </div>
-      <button class="btn-scan">
-        <ion-icon name="qr-code-outline" class="scan-icon"></ion-icon>
+      <ion-button class="btn-scan" (click)="scanBarcode()" fill="clear">
+        <ion-icon name="qr-code-outline" class="scan-icon" slot="start"></ion-icon>
         {{ 'SCAN' | translate }}
-      </button>
+      </ion-button>
     </div>
 
-    <!-- Metadata Grid -->
-    <div class="info-grid-container">
-      <div class="grid-cell full-width">
-        <span class="cell-label">{{ 'EQUIPMENT_NAME' | translate }}</span>
-        <p class="cell-value">{{ item.equipmentName }}</p>
-      </div>
+    <ion-grid class="info-grid-container ion-no-padding">
+      <ion-row>
+        <ion-col size="12" class="grid-cell">
+          <span class="cell-label">{{ 'EQUIPMENT_NAME' | translate }}</span>
+          <p class="cell-value">{{ item.equipmentName }}</p>
+        </ion-col>
+      </ion-row>
 
-      <div class="grid-cell">
-        <span class="cell-label">{{ 'DUE_DATE' | translate }}</span>
-        <p class="cell-value">{{ item.dueDate }}</p>
-      </div>
+      <ion-row>
+        <ion-col size="6" class="grid-cell">
+          <span class="cell-label">{{ 'DUE_DATE' | translate }}</span>
+          <p class="cell-value">{{ item.dueDate }}</p>
+        </ion-col>
 
-      <div class="grid-cell">
-        <span class="cell-label">{{ 'SYNC_STATUS' | translate }}</span>
-        <div class="sync-status-indicator">
-          <ion-icon name="cloud-done-outline" class="cloud-icon" *ngIf="item.syncStatus === 'Synced'"></ion-icon>
-          <ion-icon name="cloud-offline-outline" class="cloud-icon-pending" *ngIf="item.syncStatus !== 'Synced'"></ion-icon>
-          <span class="sync-label-text" [class.synced]="item.syncStatus === 'Synced'">
-            {{ (item.syncStatus === 'Synced' ? 'LOCAL_SYNCED' : 'PENDING_SYNC') | translate }}
+        <ion-col size="6" class="grid-cell">
+          <span class="cell-label">{{ 'SYNC_STATUS' | translate }}</span>
+          <div class="sync-status-indicator">
+            <ion-icon name="cloud-done-outline" class="cloud-icon" *ngIf="item.syncStatus === 'Synced'"></ion-icon>
+            <ion-icon name="cloud-offline-outline" class="cloud-icon-pending"
+              *ngIf="item.syncStatus !== 'Synced'"></ion-icon>
+            <span class="sync-label-text" [class.synced]="item.syncStatus === 'Synced'">
+              {{ (item.syncStatus === 'Synced' ? 'LOCAL_SYNCED' : 'PENDING_SYNC') | translate }}
+            </span>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6" class="grid-cell">
+          <span class="cell-label">{{ 'CURRENT_RESULT' | translate }}</span>
+          <span class="result-badge-detail" [class]="item.resultStatus.toLowerCase()">
+            {{ (item.resultStatus | uppercase) | translate }}
           </span>
-        </div>
-      </div>
+        </ion-col>
 
-      <div class="grid-cell">
-        <span class="cell-label">{{ 'CURRENT_RESULT' | translate }}</span>
-        <span class="result-badge-detail" [class]="item.resultStatus.toLowerCase()">
-          {{ (item.resultStatus | uppercase) | translate }}
-        </span>
-      </div>
+        <ion-col size="6" class="grid-cell">
+          <span class="cell-label">{{ 'LAST_MODIFIED' | translate }}</span>
+          <p class="cell-value-small">{{ item.updatedAt | date:'MM.dd.yy // HH:mm' }}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-      <div class="grid-cell">
-        <span class="cell-label">{{ 'LAST_MODIFIED' | translate }}</span>
-        <p class="cell-value-small">{{ item.updatedAt | date:'MM.dd.yy // HH:mm' }}</p>
-      </div>
-    </div>
-
-    <!-- Record Result Section -->
     <div class="record-section-title">
       <span class="square-bullet">■</span> {{ 'RECORD_RESULT' | translate }}
     </div>
 
-    <!-- Image Attachment -->
-    <button class="btn-attach-image">
-      <ion-icon name="camera-outline" class="camera-icon"></ion-icon>
+    <ion-button class="btn-attach-image" (click)="attachImage()" fill="clear">
+      <ion-icon name="camera-outline" class="camera-icon" slot="start"></ion-icon>
       {{ 'ATTACH_IMAGE' | translate }}
-    </button>
+    </ion-button>
+    <input type="file" id="camera-file-input" accept="image/*" style="display: none;" (change)="onFileSelected($event)" />
 
-    <!-- Pass / Fail toggles -->
-    <div class="result-toggle-buttons">
-      <button 
-        class="toggle-btn pass" 
-        [class.active]="selectedResult === 'Passed'"
-        (click)="selectResult('Passed')">
-        <ion-icon name="checkmark-circle-outline" class="toggle-icon"></ion-icon>
-        {{ 'PASS' | translate }}
-      </button>
-      
-      <button 
-        class="toggle-btn fail" 
-        [class.active]="selectedResult === 'Failed'"
-        (click)="selectResult('Failed')">
-        <ion-icon name="alert-circle-outline" class="toggle-icon"></ion-icon>
-        {{ 'FAIL' | translate }}
-      </button>
+    <div class="attached-image-preview-card" *ngIf="attachedImageB64">
+      <img [src]="getSafeImageUrl(attachedImageB64)" alt="Attached Asset" class="preview-img" />
+      <ion-button type="button" class="btn-remove-preview" (click)="attachedImageB64 = null" fill="clear">
+        <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+      </ion-button>
     </div>
 
-    <!-- Technical Notes -->
+    <ion-row class="result-toggle-buttons">
+      <ion-col size="6" style="padding-right: 8px; padding-left: 0; padding-top: 0; padding-bottom: 0;">
+        <ion-button class="toggle-btn pass" [class.active]="selectedResult === 'Passed'" (click)="selectResult('Passed')" fill="clear">
+          <ion-icon name="checkmark-circle-outline" class="toggle-icon" slot="start"></ion-icon>
+          {{ 'PASS' | translate }}
+        </ion-button>
+      </ion-col>
+
+      <ion-col size="6" style="padding-left: 8px; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+        <ion-button class="toggle-btn fail" [class.active]="selectedResult === 'Failed'" (click)="selectResult('Failed')" fill="clear">
+          <ion-icon name="alert-circle-outline" class="toggle-icon" slot="start"></ion-icon>
+          {{ 'FAIL' | translate }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
     <div class="tech-notes-container">
       <span class="cell-label">{{ 'TECHNICAL_NOTES' | translate }}</span>
-      <textarea 
-        [(ngModel)]="technicalNotes" 
-        [placeholder]="'ENTER_FINDINGS' | translate" 
+      <textarea [(ngModel)]="technicalNotes" [placeholder]="'ENTER_FINDINGS' | translate"
         class="notes-textarea"></textarea>
     </div>
 
-    <!-- Additional widgets -->
-    <!-- Op Hours -->
     <div class="widget-card">
       <div class="widget-header">
         <ion-icon name="time-outline" class="widget-icon"></ion-icon>
@@ -121,7 +123,6 @@
       </div>
     </div>
 
-    <!-- Core Temp -->
     <div class="widget-card border-orange">
       <div class="widget-header">
         <ion-icon name="thermometer-outline" class="widget-icon orange-icon"></ion-icon>
@@ -136,7 +137,6 @@
       </div>
     </div>
 
-    <!-- Volt Stability -->
     <div class="widget-card border-green">
       <div class="widget-header">
         <ion-icon name="flash-outline" class="widget-icon green-icon"></ion-icon>
@@ -146,14 +146,10 @@
       <span class="nominal-text">{{ 'NOMINAL_RANGE' | translate }}</span>
     </div>
 
-    <!-- Commit Button -->
-    <button 
-      class="btn-commit-database" 
-      [disabled]="!selectedResult"
-      (click)="save()">
-      <ion-icon name="save-outline" class="commit-icon"></ion-icon>
-      {{ 'COMMIT_DATABASE' | translate }}
-    </button>
+    <ion-button class="btn-commit-database" [disabled]="!selectedResult" (click)="save()" fill="clear">
+      <ion-icon name="save-outline" class="commit-icon" slot="start"></ion-icon>
+      {{ 'SUBMIT' | translate }}
+    </ion-button>
 
   </div>
 

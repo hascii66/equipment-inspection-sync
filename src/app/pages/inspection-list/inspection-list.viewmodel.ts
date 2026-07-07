@@ -10,7 +10,6 @@ export class InspectionListViewModel {
   private inspectionsSubject = new BehaviorSubject<Inspection[]>([]);
   private searchQuerySubject = new BehaviorSubject<string>('');
 
-  // Combined observable that filters inspections based on the search query
   inspections$: Observable<Inspection[]> = combineLatest([
     this.inspectionsSubject.asObservable(),
     this.searchQuerySubject.asObservable()

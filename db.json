@@ -6,10 +6,10 @@
       "sysId": "HVAC-8839-A",
       "equipmentName": "HVAC Compressor 01",
       "dueDate": "2026-07-10",
-      "resultStatus": "Pending",
+      "resultStatus": "Failed",
       "syncStatus": "Pending",
-      "updatedAt": "2026-07-07T07:57:24.498Z",
-      "technicalNotes": "",
+      "updatedAt": "2026-07-07T10:50:14.222Z",
+      "technicalNotes": "Test Note",
       "opHours": 8520,
       "coreTemp": 38.2,
       "voltStability": 99.4
@@ -22,7 +22,7 @@
       "dueDate": "2026-07-08",
       "resultStatus": "Failed",
       "syncStatus": "Failed",
-      "updatedAt": "2026-07-07T07:57:24.498Z",
+      "updatedAt": "2026-07-07T08:56:49.317Z",
       "technicalNotes": "Valves leaking, pressure loss detected.",
       "opHours": 3100,
       "coreTemp": 24.1,
@@ -30,11 +30,17 @@
     },
     {
       "id": "4",
+      "equipmentId": "FAP-04",
+      "sysId": "FAP-9921-C",
       "equipmentName": "Fire Alarm Panel 4",
       "dueDate": "2026-07-15",
-      "resultStatus": "Pending",
-      "syncStatus": "Failed",
-      "updatedAt": "2026-07-07T07:42:51.150Z"
+      "resultStatus": "Failed",
+      "syncStatus": "Pending",
+      "updatedAt": "2026-07-07T10:50:05.219Z",
+      "technicalNotes": "Test",
+      "opHours": 24300,
+      "coreTemp": 28.6,
+      "voltStability": 99.9
     },
     {
       "id": "5",

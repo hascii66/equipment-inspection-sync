@@ -32,7 +32,6 @@ export class InspectionListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Loaded automatically
   }
 
   ionViewWillEnter() {

@@ -16,6 +16,7 @@
 
 .tech-header {
   border-bottom: 1px solid var(--border-color);
+  background: #181818;
 }
 
 .tech-toolbar {
@@ -23,6 +24,8 @@
   --color: var(--text-primary);
   --border-style: none;
   padding: 4px 8px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .back-btn {
@@ -50,7 +53,7 @@
     height: 6px;
     border-radius: 50%;
     background: #555;
-    
+
     &.online {
       background: #4caf50;
       box-shadow: 0 0 8px #4caf50;
@@ -70,10 +73,9 @@
   margin: 0 auto;
 }
 
-// Hero Schematic Card
 .hero-schematic-card {
   position: relative;
-  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1581092334651-ddf26d9aae9d?w=600&auto=format&fit=crop') center/cover;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85)), url('https://images.unsplash.com/photo-1581092334651-ddf26d9aae9d?w=600&auto=format&fit=crop') center/cover;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 24px;
@@ -106,7 +108,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     font-size: 0.75rem;
@@ -122,10 +124,7 @@
   }
 }
 
-// Metadata Grid
 .info-grid-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   border-top: 1px solid var(--border-color);
   border-left: 1px solid var(--border-color);
   border-radius: 8px;
@@ -219,7 +218,6 @@
   }
 }
 
-// Record Result Section Header
 .record-section-title {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
@@ -235,7 +233,6 @@
   }
 }
 
-// Attach Image
 .btn-attach-image {
   width: 100%;
   background: #181818;
@@ -262,11 +259,7 @@
   }
 }
 
-// Pass / Fail Toggle Buttons
 .result-toggle-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -291,7 +284,9 @@
   }
 
   &.pass {
-    &:hover, &.active {
+
+    &:hover,
+    &.active {
       border-color: var(--green-text);
       color: var(--green-text);
       background: rgba(76, 175, 80, 0.05);
@@ -299,7 +294,9 @@
   }
 
   &.fail {
-    &:hover, &.active {
+
+    &:hover,
+    &.active {
       border-color: var(--red-text);
       color: var(--red-text);
       background: rgba(244, 67, 54, 0.05);
@@ -307,7 +304,6 @@
   }
 }
 
-// Technical Notes
 .tech-notes-container {
   background: #181818;
   border: 1px solid var(--border-color);
@@ -340,7 +336,6 @@
   }
 }
 
-// Widget Cards
 .widget-card {
   background: #181818;
   border: 1px solid var(--border-color);
@@ -396,7 +391,6 @@
     font-weight: 500;
   }
 
-  // Progress bar custom
   .progress-bar-container {
     width: 100%;
     height: 6px;
@@ -411,7 +405,6 @@
     border-radius: 3px;
   }
 
-  // Segmented scale
   .segmented-bar {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -424,16 +417,18 @@
     border-radius: 3px;
 
     &.active {
-      &:nth-child(1), &:nth-child(2) {
+
+      &:nth-child(1),
+      &:nth-child(2) {
         background: var(--green-text);
       }
+
       &:nth-child(3) {
         background: #ff9800;
       }
     }
   }
 
-  // Nominal text
   .nominal-text {
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.7rem;
@@ -442,7 +437,6 @@
   }
 }
 
-// Bottom Save button
 .btn-commit-database {
   width: 100%;
   background: #a4c2f4;
@@ -483,5 +477,41 @@
   p {
     margin-top: 16px;
     font-weight: 500;
+  }
+}
+
+.attached-image-preview-card {
+  position: relative;
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: #1e1e1e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+
+  .preview-img {
+    max-height: 180px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .btn-remove-preview {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    padding: 0;
+    color: #ff5252;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

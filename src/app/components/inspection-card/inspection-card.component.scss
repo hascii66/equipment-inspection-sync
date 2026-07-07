@@ -15,7 +15,7 @@
 .tech-inspection-card {
   background: #181818;
   border-bottom: 1px solid var(--border-color);
-  padding: 20px 16px; // Horizontal padding inside the card component
+  padding: 20px 16px;
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
@@ -89,7 +89,6 @@
     }
   }
 
-  // Sync statuses
   .sync-status-display {
     font-size: 0.8rem;
     font-weight: 500;

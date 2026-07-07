@@ -27,7 +27,7 @@ export class InspectionDetailViewModel {
     });
   }
 
-  async saveStatus(result: 'Passed' | 'Failed', notes?: string) {
+  async saveStatus(result: 'Passed' | 'Failed', notes?: string, imageB64?: string | null) {
     const current = this.inspectionSubject.value;
     if (!current) return;
 
@@ -35,7 +35,8 @@ export class InspectionDetailViewModel {
       ...current,
       resultStatus: result,
       technicalNotes: notes ?? current.technicalNotes,
-      syncStatus: 'Pending' // mark as pending to be picked up by sync
+      imageB64: imageB64 !== undefined ? (imageB64 ?? undefined) : current.imageB64,
+      syncStatus: 'Pending'
     };
 
     await this.dbService.updateInspection(updated);

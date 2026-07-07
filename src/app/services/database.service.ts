@@ -1,24 +1,30 @@
 import { Injectable } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
-import { SQLiteConnection, SQLiteDBConnection, CapacitorSQLite } from '@capacitor-community/sqlite';
-import { Inspection } from '../models/inspection.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Inspection } from '../models/inspection.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
-  private sqliteConnection!: SQLiteConnection;
-  private db!: SQLiteDBConnection;
+  private cordovaDb: any;
   private isDbReady = new BehaviorSubject<boolean>(false);
   private isWeb = false;
 
-  // Web fallback storage (versioned to force update)
   private webStorageKey = 'equipment_inspections_fallback_v3';
 
   constructor() {
-    this.isWeb = !Capacitor.isNativePlatform();
-    this.initializeDatabase();
+    document.addEventListener('deviceready', () => {
+      this.initializeDatabase();
+    }, false);
+
+    setTimeout(() => {
+      if (!this.isDbReady.value) {
+        console.warn('deviceready not received in time. Assuming Web environment.');
+        this.isWeb = true;
+        this.initWebData();
+        this.isDbReady.next(true);
+      }
+    }, 1500);
   }
 
   getReadyState(): Observable<boolean> {
@@ -27,24 +33,20 @@ export class DatabaseService {
 
   private async initializeDatabase() {
     try {
-      if (this.isWeb) {
-        console.warn('Running on Web. Fallback to LocalStorage database simulation.');
+      const win = window as any;
+      if (!win.sqlitePlugin) {
+        console.warn('Cordova sqlitePlugin not found. Falling back to LocalStorage.');
+        this.isWeb = true;
         this.initWebData();
         this.isDbReady.next(true);
         return;
       }
 
-      this.sqliteConnection = new SQLiteConnection(CapacitorSQLite);
-      this.db = await this.sqliteConnection.createConnection(
-        'inspections_db_v2',
-        false,
-        'no-encryption',
-        1,
-        false
-      );
+      this.cordovaDb = win.sqlitePlugin.openDatabase({
+        name: 'inspections_db_v2.db',
+        location: 'default'
+      });
 
-      await this.db.open();
-      
       const createTableQuery = `
         CREATE TABLE IF NOT EXISTS inspections (
           id TEXT PRIMARY KEY,
@@ -58,14 +60,15 @@ export class DatabaseService {
           technicalNotes TEXT,
           opHours INTEGER,
           coreTemp REAL,
-          voltStability REAL
+          voltStability REAL,
+          imageB64 TEXT
         );
       `;
-      await this.db.execute(createTableQuery);
+      
+      await this.executeSql(createTableQuery);
 
-      // Check if table is empty
-      const checkEmpty = await this.db.query('SELECT COUNT(*) as count FROM inspections');
-      const count = checkEmpty.values?.[0]?.count || 0;
+      const rows = await this.querySql('SELECT COUNT(*) as count FROM inspections');
+      const count = rows[0]?.count || 0;
 
       if (count === 0) {
         await this.seedData();
@@ -73,7 +76,7 @@ export class DatabaseService {
 
       this.isDbReady.next(true);
     } catch (error) {
-      console.error('Database initialization failed. Falling back to simulated storage:', error);
+      console.error('Database initialization failed. Falling back to LocalStorage:', error);
       this.isWeb = true;
       this.initWebData();
       this.isDbReady.next(true);
@@ -167,10 +170,10 @@ export class DatabaseService {
     const seed = this.getSeedRecords();
     for (const record of seed) {
       const query = `
-        INSERT INTO inspections (id, equipmentId, sysId, equipmentName, dueDate, resultStatus, syncStatus, updatedAt, technicalNotes, opHours, coreTemp, voltStability)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO inspections (id, equipmentId, sysId, equipmentName, dueDate, resultStatus, syncStatus, updatedAt, technicalNotes, opHours, coreTemp, voltStability, imageB64)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
-      await this.db.run(query, [
+      await this.executeSql(query, [
         record.id,
         record.equipmentId,
         record.sysId,
@@ -182,9 +185,45 @@ export class DatabaseService {
         record.technicalNotes || '',
         record.opHours || 0,
         record.coreTemp || 0.0,
-        record.voltStability || 0.0
+        record.voltStability || 0.0,
+        record.imageB64 || ''
       ]);
     }
+  }
+
+  private executeSql(query: string, params: any[] = []): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.cordovaDb.transaction((tx: any) => {
+        tx.executeSql(query, params, 
+          (tx: any, results: any) => resolve(results),
+          (tx: any, err: any) => {
+            reject(err);
+            return false;
+          }
+        );
+      });
+    });
+  }
+
+  private querySql(query: string, params: any[] = []): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.cordovaDb.transaction((tx: any) => {
+        tx.executeSql(query, params, 
+          (tx: any, results: any) => {
+            const len = results.rows.length;
+            const output = [];
+            for (let i = 0; i < len; i++) {
+              output.push(results.rows.item(i));
+            }
+            resolve(output);
+          },
+          (tx: any, err: any) => {
+            reject(err);
+            return false;
+          }
+        );
+      });
+    });
   }
 
   async getAllInspections(): Promise<Inspection[]> {
@@ -193,8 +232,7 @@ export class DatabaseService {
       return data ? JSON.parse(data) : [];
     }
 
-    const res = await this.db.query('SELECT * FROM inspections ORDER BY dueDate ASC');
-    return (res.values || []) as Inspection[];
+    return this.querySql('SELECT * FROM inspections ORDER BY dueDate ASC');
   }
 
   async getInspectionById(id: string): Promise<Inspection | null> {
@@ -203,8 +241,8 @@ export class DatabaseService {
       return inspections.find(i => i.id === id) || null;
     }
 
-    const res = await this.db.query('SELECT * FROM inspections WHERE id = ?', [id]);
-    return res.values && res.values.length > 0 ? (res.values[0] as Inspection) : null;
+    const rows = await this.querySql('SELECT * FROM inspections WHERE id = ?', [id]);
+    return rows.length > 0 ? rows[0] : null;
   }
 
   async updateInspection(inspection: Inspection): Promise<void> {
@@ -221,10 +259,10 @@ export class DatabaseService {
 
     const query = `
       UPDATE inspections
-      SET resultStatus = ?, syncStatus = ?, updatedAt = ?, technicalNotes = ?, opHours = ?, coreTemp = ?, voltStability = ?
+      SET resultStatus = ?, syncStatus = ?, updatedAt = ?, technicalNotes = ?, opHours = ?, coreTemp = ?, voltStability = ?, imageB64 = ?
       WHERE id = ?;
     `;
-    await this.db.run(query, [
+    await this.executeSql(query, [
       inspection.resultStatus,
       inspection.syncStatus,
       inspection.updatedAt,
@@ -232,6 +270,7 @@ export class DatabaseService {
       inspection.opHours || 0,
       inspection.coreTemp || 0,
       inspection.voltStability || 0,
+      inspection.imageB64 || '',
       inspection.id
     ]);
   }
@@ -256,7 +295,7 @@ export class DatabaseService {
         SET syncStatus = ?, updatedAt = ?
         WHERE id = ?;
       `;
-      await this.db.run(query, [u.syncStatus, new Date().toISOString(), u.id]);
+      await this.executeSql(query, [u.syncStatus, new Date().toISOString(), u.id]);
     }
   }
 }

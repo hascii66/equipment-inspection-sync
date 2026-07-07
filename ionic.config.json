@@ -1,5 +1,7 @@
 {
   "name": "equipment-inspection-sync",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

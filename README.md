@@ -1,67 +1,88 @@
 # Equipment Inspector (Offline-First Mobile App)
 
-แอปพลิเคชันมือถือสำหรับบันทึกผลการตรวจสอบอุปกรณ์ (Equipment Inspection) แบบ Offline-first พัฒนาด้วย **Ionic Framework**, **Angular 19+**, **Capacitor** และ **SQLite** ออกแบบมาเพื่อให้เจ้าหน้าที่ภาคสนาม (Field Technicians) สามารถบันทึกข้อมูลการตรวจสอบได้ทันทีแม้ในพื้นที่ที่ไม่มีสัญญาณอินเทอร์เน็ต
+This is an offline-first mobile app for recording equipment inspections, built with **Ionic Framework**, **Angular 19**, and **Cordova**. It helps field technicians log inspections even when they're completely offline, and automatically syncs the data back when the connection returns.
 
 ---
 
-## 🛠️ ความต้องการของระบบ (System Requirements)
-- **Node.js**: เวอร์ชั่น `v20.19` หรือ `v22.12` ขึ้นไป (เนื่องจาก Angular 20 CLI ต้องการ Node เวอร์ชั่นดังกล่าว)
-- **nvm** (แนะนำ): เพื่อความสะดวกในการจัดการเวอร์ชั่นของ Node.js
+## 🚀 Quick Start
 
----
+Here is how to get the project up and running:
 
-## 🚀 ขั้นตอนการติดตั้งและรันโปรเจกต์ (Quick Start)
-
-หากคุณเพิ่งทำการโคลน (Clone) โปรเจกต์นี้มา ให้ทำตามขั้นตอนดังนี้:
-
-### 1. สลับ Node.js เวอร์ชั่น (ถ้ามี nvm)
+### 1. Requirements & Install
+Make sure you are using Node 22 (or at least 20):
 ```bash
 nvm use 22
-```
-
-### 2. ติดตั้ง Dependencies
-ติดตั้งแพ็กเกจทั้งหมดที่จำเป็นของโปรเจกต์:
-```bash
 npm install
 ```
 
-### 3. รัน Mock REST API Server (เปิดทิ้งไว้ใน Terminal ที่ 1)
-โปรเจกต์นี้ใช้ `json-server` จำลองเป็นระบบ API ส่วนกลางเพื่อรองรับการซิงค์ข้อมูล:
+### 2. Run the Mock API Server (Terminal 1)
+We use `json-server` to mock the central backend database. Keep this running in the background:
 ```bash
 npm run mock-server
 ```
-*API Server จะทำงานอยู่ที่ [http://localhost:3000/inspections](http://localhost:3000/inspections)*
 
-### 4. รันแอปพลิเคชัน (ใน Terminal ที่ 2)
-รัน Angular / Ionic Development Server เพื่อทดสอบบนเว็บเบราว์เซอร์:
+### 3. Run the Web App (Terminal 2)
+Test the app interface instantly in your web browser:
 ```bash
 npx ionic serve
 ```
-*ระบบจะเปิดเบราว์เซอร์ไปที่ [http://localhost:8100](http://localhost:8100) อัตโนมัติ*
+
+### 4. Run on Simulators/Emulators
+Because of Angular 19's custom build system, we build the web bundle first, then deploy it using Cordova:
+
+```bash
+# Compile web assets
+npx ionic build
+
+# Copy web assets to native platforms
+npx cordova prepare
+
+# Or Compile both web and native assets
+npx ionic build && npx cordova prepare
+
+# Launch iOS Simulator
+npx cordova emulate ios
+
+# Launch Android Emulator
+npx cordova emulate android
+```
 
 ---
 
-## 💡 ฟีเจอร์ที่พร้อมใช้งาน
+## ✨ Features Implemented
 
-1. **Database Initialization & Web Fallback**: 
-   - เมื่อเปิดแอปครั้งแรก ระบบจะทำการสร้างตาราง `inspections` และ Seed ข้อมูลอุปกรณ์เริ่มต้น 5 รายการให้ทันที
-   - หากรันบนบราวเซอร์ (Web runtime) ระบบจะจำลอง SQLite ผ่าน **LocalStorage** ให้อัตโนมัติ เพื่อให้ผู้ตรวจประเมินสามารถรันเทสบนบราวเซอร์ได้ทันทีโดยไม่ต้องตั้งค่า Native Simulator
-2. **Inspection List Screen**:
-   - แสดงรายการอุปกรณ์ทั้งหมด พร้อมสถานะการตรวจสอบ (Passed/Failed) และสถานะการซิงค์ที่มีสีระบุชัดเจน (Synced = เขียว, Pending = เหลือง, Failed = แดง)
-3. **Inspection Detail Screen**:
-   - หน้ารายละเอียดการตรวจสอบ สามารถเลือกเปลี่ยนผลการตรวจสอบเป็น **Passed** หรือ **Failed** และบันทึกลง SQLite/LocalStorage ได้ทันทีในขณะออฟไลน์
-4. **Sync Mechanism & Partial Success**:
-   - ปุ่ม **Sync** จะกดได้เมื่อตัวแอปตรวจพบสถานะ Online
-   - รองรับ **Partial Success**: หากส่งข้อมูลซิงค์ไป 5 ตัว แล้วมีรายการบางตัวซิงค์ล้มเหลว (เช่น Server ขัดข้องเฉพาะเครื่อง) ตัวที่ซิงค์ผ่านจะถูกปรับสถานะเป็น `Synced` ส่วนตัวที่ล้มเหลวจะค้างอยู่ในคิว `Failed` เพื่อรอซิงค์ใหม่ครั้งหน้า
-5. **Auto-Trigger Sync**:
-   - เมื่อปิดโหมดเครื่องบินหรือเชื่อมต่อเน็ตได้ใหม่อีกครั้ง แอปพลิเคชันจะตรวจสอบคิวและกดซิงค์ข้อมูลให้โดยอัตโนมัติ (ผ่าน Capacitor Network Plugin)
+* **Offline SQLite Database**: Runs on a native SQLite database with a seamless **LocalStorage fallback** for web browser reviews.
+* **Camera & Barcode Scanner**: Fully integrated native Cordova camera and barcode scanner (with clean simulated web fallbacks so you can test them in your browser).
+* **Smart Syncing**: 
+  * Displays color-coded sync status (Synced, Pending, Failed).
+  * Auto-triggers sync in the background when the app detects your device goes back online.
+  * Supports **Partial Success**—if one record fails to sync, others will still go through successfully.
+* **Aesthetics**: Features a clean, dark futuristic theme, smooth transitions, and high-contrast status bars.
+* **100% English & i18n**: Built using `@ngx-translate` v18 standalone architecture.
 
 ---
 
-## 🏗️ โครงสร้างสถาปัตยกรรม (Architectural Structure)
+## 🛠️ Architectural & Sync Decisions
 
-- **TypeScript Strict Mode**: เปิดใช้งาน Strict Mode ในการประกาศ Interface และ Data Models
-- **Separation of Concerns (MVVM Pattern)**:
-  - โค้ดของหน้าจอ (`.page.ts`) ไม่มี Business Logic หรือ State ซับซ้อน มีหน้าที่แสดงผลและเรียก Toast / Alerts เท่านั้น
-  - Business Logic และการบริหาร State ทั้งหมด ถูกแยกไปอยู่ที่ **ViewModel** (`.viewmodel.ts`)
-  - การติดต่อ Database และการทำ Sync ข้อมูล ถูกแยกเป็นระบบ Service (`DatabaseService` และ `SyncService`)
+### 1. Offline-First Architecture
+* All data writes and updates during inspection (Passed/Failed result selection, Technical Notes input, Photo Attachments) are immediately saved to the local SQLite database (`inspections_db_v2.db`).
+* No network calls are made during the save operation, ensuring zero delay and absolute reliability in remote offline environments.
+
+### 2. MVVM Design Pattern
+* The business logic is strictly decoupled from the UI components. ViewModels (`InspectionListViewModel` and `InspectionDetailViewModel`) act as data brokers between the Angular UI pages and the core Services.
+* Database operations (`DatabaseService`) and Web Synchronization (`SyncService`) are encapsulated inside injectable Angular Services.
+
+### 3. Sync & Conflict Assumptions
+* **Last-Write-Wins**: The technician's device is assumed to be the single source of truth for their assigned inspection sheet, thus conflicts are resolved by overwriting the backend record with the latest locally captured parameters.
+* **Partial Success Handling**: Individual API calls are wrapped in dedicated `try-catch` blocks. If 3 of 5 records sync successfully but 2 fail (e.g., due to specific data validation or server timeout), the successful 3 are marked `Synced` locally, while the 2 failures remain in the queue as `Failed` for later retry.
+* **Automatic Reconnect Trigger**: Listening to the browser/cordova `online` event automatically resumes the queued sync process once connection status shifts back to online.
+
+### 4. Native & Simulator Fallbacks
+* To support running in standard desktop web browsers and iOS/Android Simulator platforms (where physical cameras or scanning modules may be unavailable), we designed responsive fallback fallbacks:
+  * Camera triggers a native file/camera selector on browsers and simulators.
+  * Barcode scanner opens a manual simulation modal prefilled with target test values.
+
+### 5. Skipped Scope
+* **User Authentication**: Standard user auth flow (login/token) was omitted because the scope focused strictly on offline persistence, native plugins, and REST sync handling.
+* **Conflict Resolution UI**: Interactive merge/conflict UI was skipped under the assumption that inspections are individually assigned to single technicians.
+

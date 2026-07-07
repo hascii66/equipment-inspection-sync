@@ -1,8 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Network } from '@capacitor/network';
 import { DatabaseService } from './database.service';
-import { Inspection } from '../models/inspection.model';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({
@@ -25,36 +23,29 @@ export class SyncService {
     this.initializeNetworkListener();
   }
 
-  private async initializeNetworkListener() {
-    try {
-      const status = await Network.getStatus();
-      this.connectionStatusSubject.next(status.connected);
+  private initializeNetworkListener() {
+    this.connectionStatusSubject.next(navigator.onLine);
 
-      Network.addListener('networkStatusChange', (status) => {
-        this.ngZone.run(async () => {
-          this.connectionStatusSubject.next(status.connected);
-          console.log('Network status changed:', status);
-          if (status.connected) {
-            console.log('Network reconnected. Auto-triggering sync...');
-            await this.sync();
-          }
-        });
+    window.addEventListener('online', () => {
+      this.ngZone.run(async () => {
+        console.log('Device went Online. Auto-triggering sync...');
+        this.connectionStatusSubject.next(true);
+        await this.sync();
       });
-    } catch (e) {
-      console.warn('Network plugin not running natively, simulating connected status.');
-      this.connectionStatusSubject.next(navigator.onLine);
-      window.addEventListener('online', () => {
-        this.ngZone.run(async () => {
-          this.connectionStatusSubject.next(true);
-          await this.sync();
-        });
+    });
+
+    window.addEventListener('offline', () => {
+      this.ngZone.run(() => {
+        console.log('Device went Offline.');
+        this.connectionStatusSubject.next(false);
       });
-      window.addEventListener('offline', () => {
-        this.ngZone.run(() => {
-          this.connectionStatusSubject.next(false);
-        });
+    });
+
+    document.addEventListener('deviceready', () => {
+      this.ngZone.run(() => {
+        this.connectionStatusSubject.next(navigator.onLine);
       });
-    }
+    }, false);
   }
 
   async sync(): Promise<{ succeeded: number; failed: number }> {
@@ -62,7 +53,6 @@ export class SyncService {
       return { succeeded: 0, failed: 0 };
     }
 
-    // Verify online status
     const isOnline = this.connectionStatusSubject.value;
     if (!isOnline) {
       console.warn('Cannot sync: Device is offline.');
@@ -74,7 +64,6 @@ export class SyncService {
     let failedCount = 0;
 
     try {
-      // Wait for database to be ready
       const isDbReady = await firstValueFrom(this.dbService.getReadyState());
       if (!isDbReady) {
         throw new Error('Database is not ready.');
@@ -91,14 +80,13 @@ export class SyncService {
 
       for (const record of recordsToSync) {
         try {
-          // Check if record exists on server first, or attempt PUT and fallback to POST on 404
           let exists = false;
           try {
             await firstValueFrom(this.http.get(`${this.mockApiUrl}/${record.id}`));
             exists = true;
           } catch (e: any) {
             if (e && e.status !== 404) {
-              throw e; // Throw other connection errors
+              throw e;
             }
           }
 

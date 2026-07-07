@@ -1,27 +1,16 @@
 <ion-header class="ion-no-border tech-header">
   <ion-toolbar class="tech-toolbar">
-    <ion-buttons slot="start">
-      <ion-button class="back-btn">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    
     <ion-title class="tech-title">{{ 'TITLE' | translate }}</ion-title>
-    
+
     <ion-buttons slot="end">
-      <!-- Network indicator badge -->
       <div class="network-pill">
         <span class="status-dot" [class.online]="isOnline$ | async"></span>
         <span class="status-text">
           {{ ((isOnline$ | async) ? 'ONLINE' : 'OFFLINE') | translate }}
         </span>
       </div>
-      
-      <!-- Sync button -->
-      <ion-button 
-        class="sync-action-btn"
-        (click)="sync()" 
-        [disabled]="(isSyncing$ | async) || !(isOnline$ | async)">
+
+      <ion-button class="sync-action-btn" (click)="sync()" [disabled]="(isSyncing$ | async) || !(isOnline$ | async)">
         <ion-spinner name="crescent" *ngIf="isSyncing$ | async" color="light"></ion-spinner>
         <span *ngIf="!(isSyncing$ | async)" class="btn-inner">
           <ion-icon name="refresh-outline" class="sync-icon"></ion-icon>
@@ -33,38 +22,20 @@
 </ion-header>
 
 <ion-content class="tech-content">
-  <!-- Search container -->
-  <div class="search-box-wrapper">
-    <div class="search-box-container">
-      <ion-icon name="search-outline" class="search-icon-left"></ion-icon>
-      <input 
-        type="text" 
-        (input)="onSearch($event)" 
-        [placeholder]="'SEARCH_PLACEHOLDER' | translate" 
-        class="search-input" />
-      <ion-icon name="funnel-outline" class="filter-icon-right"></ion-icon>
+  <div class="centered-layout-wrapper">
+    <div class="search-box-wrapper">
+      <div class="search-box-container">
+        <ion-icon name="search-outline" class="search-icon-left"></ion-icon>
+        <input type="text" (input)="onSearch($event)" [placeholder]="'SEARCH_PLACEHOLDER' | translate"
+          class="search-input" />
+        <ion-icon name="funnel-outline" class="filter-icon-right"></ion-icon>
+      </div>
     </div>
-  </div>
 
-  <!-- Inspections List -->
-  <div class="inspections-list-wrapper">
-    <app-inspection-card 
-      *ngFor="let item of (inspections$ | async)" 
-      [item]="item"
-      [routerLink]="['/inspections', item.id]">
-    </app-inspection-card>
+    <ion-list class="inspections-list-wrapper" lines="none">
+      <ion-item *ngFor="let item of (inspections$ | async)" [routerLink]="['/inspections', item.id]">
+        <app-inspection-card [item]="item" style="width: 100%;"></app-inspection-card>
+      </ion-item>
+    </ion-list>
   </div>
-
-  <!-- Footer System Engine info -->
-  <div class="engine-footer">
-    <p class="engine-text-row">{{ 'ENGINE_VERSION' | translate }}</p>
-    <p class="engine-text-row text-dimmed">{{ 'LOGGED_AS' | translate }}</p>
-  </div>
-
-  <!-- Floating Add Button -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-custom">
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>

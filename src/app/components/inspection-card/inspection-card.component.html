@@ -8,12 +8,10 @@
   </div>
 
   <div class="card-status-row">
-    <!-- Result Status Badge -->
     <span class="result-badge-custom" [class]="item.resultStatus.toLowerCase()">
       {{ 'RESULT' | translate }}: {{ (item.resultStatus | uppercase) | translate }}
     </span>
 
-    <!-- Sync Status Badge -->
     <div class="sync-status-display">
       <ng-container [ngSwitch]="item.syncStatus">
         <span *ngSwitchCase="'Pending'" class="sync-waiting">

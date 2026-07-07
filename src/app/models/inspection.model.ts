@@ -11,4 +11,5 @@ export interface Inspection {
   opHours?: number;
   coreTemp?: number;
   voltStability?: number;
+  imageB64?: string;
 }
