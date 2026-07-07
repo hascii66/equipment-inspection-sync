@@ -1,0 +1,138 @@
+.network-badge {
+  margin-right: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.detail-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.card-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  margin-bottom: 20px;
+}
+
+.header-section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.label-tiny {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ion-color-step-500, #888);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.eq-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ion-color-step-900, #222);
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.info-val {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ion-color-step-800, #333);
+}
+
+.info-val-time {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ion-color-step-700, #555);
+}
+
+.badge-custom {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.action-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.action-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--ion-color-step-900, #222);
+}
+
+.action-desc {
+  font-size: 0.88rem;
+  color: var(--ion-color-step-600, #666);
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.decision-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-select {
+  --border-radius: 12px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.btn-save {
+  --border-radius: 12px;
+  margin: 0;
+  font-weight: 700;
+  height: 48px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+  color: var(--ion-color-step-600, #666);
+
+  p {
+    margin-top: 16px;
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Equipment Inspector</ion-title>
+    <ion-buttons slot="end">
+      <!-- Network Indicator Badge -->
+      <ion-badge [color]="(isOnline$ | async) ? 'success' : 'danger'" class="network-badge">
+        {{ (isOnline$ | async) ? 'Online' : 'Offline' }}
+      </ion-badge>
+      <!-- Sync Action Button -->
+      <ion-button (click)="sync()" [disabled]="(isSyncing$ | async) || !(isOnline$ | async)">
+        <ion-spinner name="crescent" *ngIf="isSyncing$ | async"></ion-spinner>
+        <span *ngIf="!(isSyncing$ | async)">Sync</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Equipment Inspector</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="content-container">
+    <ion-list lines="none">
+      <ion-item-sliding *ngFor="let item of (inspections$ | async)" class="inspection-item-card">
+        <ion-item [routerLink]="['/inspections', item.id]" button detail="false">
+          <ion-label>
+            <h2 class="equipment-name">{{ item.equipmentName }}</h2>
+            <p class="due-date">Due Date: {{ item.dueDate }}</p>
+            
+            <div class="status-badges">
+              <!-- Result Status -->
+              <ion-badge [color]="getResultColor(item.resultStatus)" class="status-badge">
+                Result: {{ item.resultStatus }}
+              </ion-badge>
+              
+              <!-- Sync Status -->
+              <ion-badge [color]="getSyncColor(item.syncStatus)" class="status-badge">
+                Sync: {{ item.syncStatus }}
+              </ion-badge>
+            </div>
+          </ion-label>
+          
+          <ion-icon name="chevron-forward-outline" slot="end" class="arrow-icon"></ion-icon>
+        </ion-item>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+</ion-content>

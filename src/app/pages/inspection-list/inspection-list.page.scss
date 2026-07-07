@@ -1,0 +1,72 @@
+.network-badge {
+  margin-right: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.content-container {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.inspection-item-card {
+  --background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  }
+
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    --border-style: none;
+    --inner-border-width: 0;
+  }
+}
+
+.equipment-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ion-color-step-900, #222);
+  margin: 0 0 6px 0;
+}
+
+.due-date {
+  font-size: 0.85rem;
+  color: var(--ion-color-step-600, #666);
+  margin: 0 0 12px 0;
+}
+
+.status-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+}
+
+.arrow-icon {
+  color: var(--ion-color-step-400, #999);
+  font-size: 1.25rem;
+}

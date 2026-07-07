@@ -1,0 +1,93 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inspections"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inspection Detail</ion-title>
+    <ion-buttons slot="end">
+      <ion-badge [color]="(isOnline$ | async) ? 'success' : 'danger'" class="network-badge">
+        {{ (isOnline$ | async) ? 'Online' : 'Offline' }}
+      </ion-badge>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="detail-container" *ngIf="inspection$ | async as item; else loading">
+    <div class="card-glass">
+      <div class="header-section">
+        <span class="label-tiny">EQUIPMENT NAME</span>
+        <h1 class="eq-title">{{ item.equipmentName }}</h1>
+      </div>
+
+      <div class="info-row">
+        <div>
+          <span class="label-tiny">DUE DATE</span>
+          <p class="info-val">{{ item.dueDate }}</p>
+        </div>
+        <div>
+          <span class="label-tiny">SYNC STATUS</span>
+          <ion-badge [color]="getSyncColor(item.syncStatus)" class="badge-custom">
+            {{ item.syncStatus }}
+          </ion-badge>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div>
+          <span class="label-tiny">CURRENT RESULT</span>
+          <ion-badge [color]="getResultColor(item.resultStatus)" class="badge-custom">
+            {{ item.resultStatus }}
+          </ion-badge>
+        </div>
+        <div>
+          <span class="label-tiny">LAST UPDATED</span>
+          <p class="info-val-time">{{ item.updatedAt | date:'short' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Section -->
+    <div class="action-card">
+      <h3 class="action-title">Record Inspection Result</h3>
+      <p class="action-desc">Select result. Changes will write immediately to local SQLite database and sync automatically once online.</p>
+
+      <div class="decision-buttons">
+        <ion-button 
+          expand="block" 
+          color="success" 
+          [fill]="selectedResult === 'Passed' ? 'solid' : 'outline'" 
+          (click)="selectResult('Passed')"
+          class="btn-select">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Passed
+        </ion-button>
+        <ion-button 
+          expand="block" 
+          color="danger" 
+          [fill]="selectedResult === 'Failed' ? 'solid' : 'outline'" 
+          (click)="selectResult('Failed')"
+          class="btn-select">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Failed
+        </ion-button>
+      </div>
+
+      <ion-button 
+        expand="block" 
+        color="primary" 
+        [disabled]="!selectedResult" 
+        (click)="save()"
+        class="btn-save">
+        Save Offline (SQLite)
+      </ion-button>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading inspection record...</p>
+    </div>
+  </ng-template>
+</ion-content>

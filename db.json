@@ -1,0 +1,36 @@
+{
+  "inspections": [
+    {
+      "id": "1",
+      "equipmentName": "HVAC Compressor 01",
+      "dueDate": "2026-07-10",
+      "resultStatus": "Pending",
+      "syncStatus": "Failed",
+      "updatedAt": "2026-07-07T07:42:51.150Z"
+    },
+    {
+      "id": "3",
+      "equipmentName": "Water Pump Alpha",
+      "dueDate": "2026-07-08",
+      "resultStatus": "Failed",
+      "syncStatus": "Failed",
+      "updatedAt": "2026-07-07T07:42:51.150Z"
+    },
+    {
+      "id": "4",
+      "equipmentName": "Fire Alarm Panel 4",
+      "dueDate": "2026-07-15",
+      "resultStatus": "Pending",
+      "syncStatus": "Failed",
+      "updatedAt": "2026-07-07T07:42:51.150Z"
+    },
+    {
+      "id": "5",
+      "equipmentName": "Elevator Control Cabin",
+      "dueDate": "2026-07-20",
+      "resultStatus": "Pending",
+      "syncStatus": "Failed",
+      "updatedAt": "2026-07-07T07:43:42.975Z"
+    }
+  ]
+}
