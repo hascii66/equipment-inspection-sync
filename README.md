@@ -1,3 +1,7 @@
+# Record POW
+
+https://github.com/user-attachments/assets/de4ae546-ecbc-4a78-b86f-88f0f5dc303b
+
 # Equipment Inspector (Offline-First Mobile App)
 
 This is an offline-first mobile app for recording equipment inspections, built with **Ionic Framework**, **Angular 19**, and **Cordova**. It helps field technicians log inspections even when they're completely offline, and automatically syncs the data back when the connection returns.
